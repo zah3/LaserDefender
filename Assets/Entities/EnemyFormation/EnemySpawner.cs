@@ -4,8 +4,10 @@ using System.Collections;
 public class EnemySpawner : MonoBehaviour {
 	
 	public GameObject enemyPrefab;
-	public float width = 10f;
-	public float hight = 3f;
+	public float width = 14f;
+	public float hight = 6f;
+	public float speed = 5f;
+	private bool movingRight = true;
 	
 	
 	// Use this for initialization
@@ -15,12 +17,16 @@ public class EnemySpawner : MonoBehaviour {
 			enemy.transform.parent = child;
 		}
 	}
-	public void OnDrowGizmos(){
-		Gizmos.DrawWireCube(transform.position, new Vector3(width, hight));	
+	public void OnDrawGizmos(){
+		Gizmos.DrawWireCube(transform.position, new Vector3(width,hight));	
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if(movingRight){
+			transform.position += new Vector3(speed*Time.deltaTime,0);
+		}else {
+			transform.position += new Vector3(speed*Time.deltaTime,0);
+		}
 	}
 }
