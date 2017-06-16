@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemySpawner : MonoBehaviour {
+public class FormationController : MonoBehaviour {
 	
 	public GameObject enemyPrefab;
 	public float width = 14f;
@@ -10,6 +10,7 @@ public class EnemySpawner : MonoBehaviour {
 	private bool movingRight = true;
 	private float xMax;
 	private float xMin;
+	public float spawnDelay = 0.9f;
 	
 	
 	// Use this for initialization
@@ -19,10 +20,28 @@ public class EnemySpawner : MonoBehaviour {
 		Vector3 leftBoundary = Camera.main.ViewportToWorldPoint( new Vector3(0,0, distanceToCamera));
 		xMax = rightBoundary.x;
 		xMin = leftBoundary.x;
+		SpawnUntillFull();
+		
+	}
+	
+	void SpawnEnemies(){
 		foreach (Transform child in transform){
 			GameObject enemy = Instantiate (enemyPrefab, child.transform.position, Quaternion.identity) as GameObject;
 			enemy.transform.parent = child;
 		}
+	}
+	
+	void SpawnUntillFull(){
+		Transform freePosition = NextFreePosition();
+		if(freePosition){
+			GameObject enemy = Instantiate (enemyPrefab, freePosition.position, Quaternion.identity) as GameObject;
+			enemy.transform.parent = freePosition;
+		}
+		if(NextFreePosition()){
+			Invoke("SpawnUntillFull",spawnDelay);
+		} 
+		
+		
 	}
 	public void OnDrawGizmos(){
 		Gizmos.DrawWireCube(transform.position, new Vector3(width,hight));	
@@ -42,5 +61,26 @@ public class EnemySpawner : MonoBehaviour {
 		}else if(rightEgdeOfFormation > xMax){
 			movingRight = false;
 		}
+		
+		if (AllMembersDead()){
+			SpawnUntillFull();
+		}
+		
+	}
+	Transform NextFreePosition(){
+		foreach(Transform childPositionGameObject in transform){
+			if (childPositionGameObject.childCount == 0){
+				return childPositionGameObject;
+			}
+		}
+		return null;
+	}
+	bool AllMembersDead(){
+		foreach(Transform childPositionGameObject in transform){
+			if (childPositionGameObject.childCount > 0){
+				return false;
+			}
+		}
+		return true;
 	}
 }
