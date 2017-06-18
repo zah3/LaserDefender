@@ -28,6 +28,12 @@ public class PlayerController : MonoBehaviour {
 		beam.rigidbody2D.velocity = new Vector3(0, projectileSpeed,0);
 		AudioSource.PlayClipAtPoint(fireSound, transform.position);
 	}
+	void Die(){
+		Destroy(gameObject);
+		LevelManager man = GameObject.Find ("LevelManager").GetComponent<LevelManager>();
+		man.LoadLevel("Win Screen");
+		
+	}
 	void Update () {
 		if(Input.GetKeyDown(KeyCode.Space)){
 			InvokeRepeating("Fire",0.000001f,fireRate);
@@ -52,10 +58,12 @@ public class PlayerController : MonoBehaviour {
 			health -= missile.GetDamage();
 			missile.Hit();
 			if(health <= 0){
-				Destroy(gameObject);
+				Die();
 			}
 		}	
 	}
+	
+	
 	
 	
 }
